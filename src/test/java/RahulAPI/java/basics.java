@@ -1,65 +1,50 @@
 package RahulAPI.java;
 
 
-import Files.PostBody;
-import Files.PutParameters;
+import Files.UserAndParameters;
 import io.restassured.RestAssured;
-import io.restassured.path.json.JsonPath;
 import org.testng.annotations.Test;
 
 import static io.restassured.RestAssured.*;
-import static org.hamcrest.Matchers.*;
 
 public class basics {
 
-      PutParameters placeIdclass = new PutParameters();
+    UserAndParameters AddUser = new UserAndParameters();
+    UserAndParameters parameters = new UserAndParameters();
 
+
+
+      //Get Booking Token
     @Test(priority = 1)
-    protected   void PostTest() {
+    protected void PostToken() {
 
-        RestAssured.baseURI = "https://rahulshettyacademy.com" ;
-        String response = given().
-                     log().all().queryParam("key", "qaclick123").header("Content-Type" , "application/json")
-                     .body(PostBody.AddPlace()).
+        RestAssured.baseURI = "https://restful-booker.herokuapp.com" ;
+        String token = given().
+                     log().all().header("Content-Type","application/json").body(UserAndParameters.AddUser()).
                 when().
-                     post("/maps/api/place/add/json").
+                     post("/auth").
                 then().
-                     assertThat().statusCode(200).body("scope" , equalTo("APP"))
-                    .header("Server" , "Apache/2.4.41 (Ubuntu)").extract().response().asString();
+                     assertThat().statusCode(200).extract().response().asString();
 
-        System.out.println(response);
-
-        JsonPath js = new JsonPath(response); //for parsing json
-        placeIdclass.setPlaceId(js.getString("place_id"));
-
-        System.out.println("\n\n\n\n\n\n"+ placeIdclass.getPlaceId() +"\n\n\n\n\n");
+        System.out.println("this is the token " + token);
 
 
     }
+
+
     @Test(priority = 2)
-    public void UpdateAddress (){
-        //Update Place
-       placeIdclass.step1();
+    public void GetBookingId(){
+        //Get Address
         given().
-                log().all().queryParam("key" , "qaclick123").header("Content-Type" , "application/json").
-                body(placeIdclass.getPlaceId()).
+                log().all().queryParam(UserAndParameters.parameters()).
                 when().
-                put("/maps/api/place/update/json").
-                then().
-                assertThat().log().all().statusCode(200).body("msg" , equalTo("Address successfully updated"));
+                get("/booking").
+                then().log().all().assertThat().statusCode(200);
 
     }
+
     @Test(priority = 3)
-    public void GetNewAddress(){
-        //Get Address
-       System.out.println("\n\n\n\n\n\n"+ placeIdclass.getPlaceId() +"\n\n\n\n\n");
-        JsonPath jsonPath = new JsonPath(placeIdclass.getPlaceId());
-        String Place_id = jsonPath.get("place_id");
-        given().
-                log().all().queryParam("key" , "qaclick123").queryParam("place_id" ,Place_id).
-                when().
-                get("/maps/api/place/get/json").
-                then().log().all().assertThat().statusCode(200).body("address",equalTo(jsonPath.get("address")));
+    public void GetBooking(){
 
     }
 
