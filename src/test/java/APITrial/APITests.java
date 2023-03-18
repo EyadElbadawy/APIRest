@@ -20,7 +20,7 @@ public class APITests {
 
         System.out.println("Status code: " + response.getStatusCode());
         System.out.println("Response" + response.asString());
-        System.out.println("Body :" + response.getBody().asString());
+        System.out.println("Bdy :" + response.getBody().asString());
         System.out.println("Time Taken :"+ response.getTime());
         System.out.println("Header : " + response.getHeader("content-type"));
 
